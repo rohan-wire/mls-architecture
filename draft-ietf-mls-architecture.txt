@@ -5,7 +5,7 @@
 Network Working Group                                      B. Beurdouche
 Internet-Draft                                           Inria & Mozilla
 Intended status: Informational                               E. Rescorla
-Expires: 7 April 2022                                            Mozilla
+Expires: 23 September 2022                                       Mozilla
                                                                 E. Omara
                                                                   Google
                                                                S. Inguva
@@ -14,7 +14,7 @@ Expires: 7 April 2022                                            Mozilla
                                                                      MIT
                                                                 A. Duric
                                                                     Wire
-                                                          4 October 2021
+                                                           22 March 2022
 
 
             The Messaging Layer Security (MLS) Architecture
@@ -75,11 +75,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 April 2022.
+   This Internet-Draft will expire on 23 September 2022.
 
 Copyright Notice
 
-   Copyright (c) 2021 IETF Trust and the persons identified as the
+   Copyright (c) 2022 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -87,63 +87,63 @@ Copyright Notice
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
    and restrictions with respect to this document.  Code Components
-   extracted from this document must include Simplified BSD License text
-   as described in Section 4.e of the Trust Legal Provisions and are
-   provided without warranty as described in the Simplified BSD License.
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
 
 Table of Contents
 
    1.  Introduction
    2.  General Setting
      2.1.  Group, Members and Clients
-     2.2.  Authentication Service
-       2.2.1.  Credential Authentication
-       2.2.2.  Message Authentication
-     2.3.  Delivery Service
-       2.3.1.  Key Storage
-       2.3.2.  Key Retrieval
-       2.3.3.  Delivery of messages and attachments
-       2.3.4.  Membership knowledge
-       2.3.5.  Membership and offline members
-     2.4.  Functional Requirements
-       2.4.1.  Membership Changes
-       2.4.2.  Parallel Groups
-       2.4.3.  Security of Attachments
-       2.4.4.  Asynchronous Usage
-       2.4.5.  Access Control
-       2.4.6.  Recovery After State Loss
-       2.4.7.  Support for Multiple Devices
-       2.4.8.  Extensibility / Pluggability
-       2.4.9.  Federation
-       2.4.10. Compatibility with Future Versions of MLS
-   3.  Security and Privacy Considerations
-     3.1.  Assumptions on Transport Security Links
-       3.1.1.  Metadata Protection for Unencrypted Group Operations
-       3.1.2.  DoS protection
-       3.1.3.  Message Suppression and Error Correction
-     3.2.  Intended Security Guarantees
-       3.2.1.  Message Secrecy and Authentication
-       3.2.2.  Forward and Post-Compromise Security
-       3.2.3.  Non-Repudiation vs Deniability
-     3.3.  Endpoint Compromise
-       3.3.1.  Compromise of AEAD key material
-       3.3.2.  Compromise of the Group Secrets of a single group for
+   3.  Authentication Service
+     3.1.  Credential Authentication
+     3.2.  Message Authentication
+   4.  Delivery Service
+     4.1.  Key Storage
+     4.2.  Key Retrieval
+     4.3.  Delivery of messages and attachments
+     4.4.  Membership knowledge
+     4.5.  Membership and offline members
+   5.  Functional Requirements
+     5.1.  Membership Changes
+     5.2.  Parallel Groups
+     5.3.  Security of Attachments
+     5.4.  Asynchronous Usage
+     5.5.  Access Control
+     5.6.  Recovery After State Loss
+     5.7.  Support for Multiple Devices
+     5.8.  Extensibility / Pluggability
+     5.9.  Federation
+     5.10. Compatibility with Future Versions of MLS
+   6.  Security and Privacy Considerations
+     6.1.  Assumptions on Transport Security Links
+       6.1.1.  Metadata Protection for Unencrypted Group Operations
+       6.1.2.  DoS protection
+       6.1.3.  Message Suppression and Error Correction
+     6.2.  Intended Security Guarantees
+       6.2.1.  Message Secrecy and Authentication
+       6.2.2.  Forward and Post-Compromise Security
+       6.2.3.  Non-Repudiation vs Deniability
+     6.3.  Endpoint Compromise
+       6.3.1.  Compromise of AEAD key material
+       6.3.2.  Compromise of the Group Secrets of a single group for
                one or more group epochs
-       3.3.3.  Compromise by an active adversary with the ability to
+       6.3.3.  Compromise by an active adversary with the ability to
                sign messages
-       3.3.4.  Compromise of the authentication with access to a
+       6.3.4.  Compromise of the authentication with access to a
                signature key
-       3.3.5.  Security consideration in the context of a full state
+       6.3.5.  Security consideration in the context of a full state
                compromise
-       3.3.6.  More attack scenarios
-     3.4.  Service Node Compromise
-       3.4.1.  General considerations
-       3.4.2.  Delivery Service Compromise
-       3.4.3.  Authentication Service Compromise
-     3.5.  Considerations for attacks outside of the threat model
-   4.  IANA Considerations
-   5.  Contributors
-   6.  Informative References
+       6.3.6.  More attack scenarios
+     6.4.  Service Node Compromise
+       6.4.1.  General considerations
+       6.4.2.  Delivery Service Compromise
+       6.4.3.  Authentication Service Compromise
+     6.5.  Considerations for attacks outside of the threat model
+   7.  IANA Considerations
+   8.  Contributors
+   9.  Informative References
    Authors' Addresses
 
 1.  Introduction
@@ -277,7 +277,7 @@ Table of Contents
 
    4.  Bob and/or Charlie respond to Alice's message.  In addition, they
        might choose to update their key material which provides post-
-       compromise security Section 3.2.2.  As a consequence of that
+       compromise security Section 6.2.2.  As a consequence of that
        change, the group secrets are updated
 
    Clients may wish to do the following:
@@ -343,7 +343,7 @@ Table of Contents
    group secret in a manner verifiable by other members of the group,
    other members cannot assume that the Member is a member of the group.
 
-2.2.  Authentication Service
+3.  Authentication Service
 
    The Authentication Service (AS) has to provide two functionalities:
 
@@ -362,9 +362,9 @@ Table of Contents
    functionalities could allow an adversary to, among other things,
    impersonate group members.  We discuss security considerations
    regarding the compromise of the different AS functionalities in
-   detail in Section Section 3.4.3.
+   detail in Section Section 6.4.3.
 
-2.2.1.  Credential Authentication
+3.1.  Credential Authentication
 
    In many cases, the first functionality might be provided by a service
    which fulfills a role similar to a certification authority in the
@@ -384,11 +384,11 @@ Table of Contents
    authentication and secrecy of messages after the compromise of a
    device.
 
-2.2.2.  Message Authentication
+3.2.  Message Authentication
 
    MLS messages are authenticated by a signature conforming to the
    signature scheme of the group's ciphersuite.  To allow for message
-   deniability (see Section Section 3.2.3), messages are not required to
+   deniability (see Section Section 6.2.3), messages are not required to
    be signed by the private key corresponding to a member's credential,
    but the key must be authenticated using some mechanism.  Thus,
    message authentication relies on the accuracy of the key's
@@ -399,7 +399,7 @@ Table of Contents
    separately due to the encryption layer of the protocol which protects
    the signature of the message.
 
-2.3.  Delivery Service
+4.  Delivery Service
 
    The Delivery Service (DS) is expected to play multiple roles in the
    Service Provider architecture:
@@ -431,7 +431,7 @@ Table of Contents
    can be considered as an active, adaptive network attacker from the
    point of view of the security analysis.
 
-2.3.1.  Key Storage
+4.1.  Key Storage
 
    Upon joining the system, each client stores its initial cryptographic
    key material with the Delivery Service.  This key material, called a
@@ -454,14 +454,14 @@ Table of Contents
    the identifier for these keys are unique across all keys stored on
    the Delivery Service.
 
-2.3.2.  Key Retrieval
+4.2.  Key Retrieval
 
    When a client wishes to establish a group, it first contacts the
    Delivery Service to request a KeyPackage for each other client,
    authenticates the KeyPackages using the signature keys, and then can
    use those to form the group.
 
-2.3.3.  Delivery of messages and attachments
+4.3.  Delivery of messages and attachments
 
    The main responsibility of the Delivery Service is to ensure delivery
    of messages.  Specifically, we assume that Delivery Services provide:
@@ -510,7 +510,7 @@ Table of Contents
    Without some sort of side information, other clients cannot generally
    distinguish this form of Denial of Service (DoS) attack.
 
-2.3.4.  Membership knowledge
+4.4.  Membership knowledge
 
    Group membership is itself sensitive information and MLS is designed
    to drastically limit the amount of persistant metadata.  However,
@@ -529,7 +529,7 @@ Table of Contents
    where metadata has to be persisted for functionality, it SHOULD be
    stored encrypted at rest.
 
-2.3.5.  Membership and offline members
+4.5.  Membership and offline members
 
    Because Forward Secrecy (FS) and Post-Compromise Security (PCS) rely
    on the active deletion and replacement of keying material, any client
@@ -546,7 +546,7 @@ Table of Contents
    compromise.  The precise details of such mechanisms are a matter of
    local policy and beyond the scope of this document.
 
-2.4.  Functional Requirements
+5.  Functional Requirements
 
    MLS is designed as a large scale group messaging protocol and hence
    aims to provide performance and safety to its users.  Messaging
@@ -555,7 +555,7 @@ Table of Contents
    50,000 members, typically including many users using multiple
    devices.
 
-2.4.1.  Membership Changes
+5.1.  Membership Changes
 
    MLS aims to provide agreement on group membership, meaning that all
    group members have agreed on the list of current group members.
@@ -589,7 +589,7 @@ Table of Contents
    messages sent after their removal but might affect previous messages
    if the group secrets have not been deleted properly.
 
-2.4.2.  Parallel Groups
+5.2.  Parallel Groups
 
    Any user may have membership in several groups simultaneously.  The
    set of members of any group may or may not form a subset of the
@@ -609,7 +609,7 @@ Table of Contents
    healing properties among parallel groups.  Such application choices
    however are outside the scope of MLS.
 
-2.4.3.  Security of Attachments
+5.3.  Security of Attachments
 
    The security properties expected for attachments in the MLS protocol
    are very similar to the ones expected from messages.  The distinction
@@ -621,7 +621,7 @@ Table of Contents
    messages, hence slightly weakening the PCS guarantees for
    attachments.
 
-2.4.4.  Asynchronous Usage
+5.4.  Asynchronous Usage
 
    No operation in MLS requires two distinct clients or members to be
    online simultaneously.  In particular, members participating in
@@ -632,7 +632,7 @@ Table of Contents
    Messaging systems that implement MLS have to provide a transport
    layer for delivering messages asynchronously and reliably.
 
-2.4.5.  Access Control
+5.5.  Access Control
 
    The MLS protocol allows each member of the messaging group to perform
    operations equally.  This is because all clients within a group
@@ -668,7 +668,7 @@ Table of Contents
       *RECOMMENDATION:* Avoid using inconsistent access control policies
       in the case of encrypted group operations.
 
-2.4.6.  Recovery After State Loss
+5.6.  Recovery After State Loss
 
    Group members whose local MLS state is lost or corrupted can
    reinitialize their state and continue participating in the group.
@@ -683,7 +683,7 @@ Table of Contents
    Previously: "This may entail some level of message loss, but does not
    result in permanent exclusion from the group." -- Statement edited]]
 
-2.4.7.  Support for Multiple Devices
+5.7.  Support for Multiple Devices
 
    It is typically expected for users within a group to own various
    devices.  A new device can be added to a group and be considered as a
@@ -694,13 +694,13 @@ Table of Contents
    of MLS.  Such mechanisms, if used, may undermine the FS and PCS
    guarantees provided by MLS.
 
-2.4.8.  Extensibility / Pluggability
+5.8.  Extensibility / Pluggability
 
    Messages that do not affect the group state can carry an arbitrary
    payload with the purpose of sharing that payload between group
    members.  No assumptions are made about the format of the payload.
 
-2.4.9.  Federation
+5.9.  Federation
 
    The protocol aims to be compatible with federated environments.
    While this document does not specify all necessary mechanisms
@@ -709,7 +709,7 @@ Table of Contents
    authentication mechanisms, ciphersuites, and infrastructure
    functionalities.
 
-2.4.10.  Compatibility with Future Versions of MLS
+5.10.  Compatibility with Future Versions of MLS
 
    It is important that multiple versions of MLS be able to coexist in
    the future.  Thus, MLS offers a version negotiation mechanism; this
@@ -726,7 +726,7 @@ Table of Contents
    at all times once he has at least received the first group operation
    message.
 
-3.  Security and Privacy Considerations
+6.  Security and Privacy Considerations
 
    MLS adopts the Internet threat model [RFC3552] and therefore assumes
    that the attacker has complete control of the network.  It is
@@ -752,7 +752,7 @@ Table of Contents
    properties such as deniability can also be achieved in specific
    architecture designs.
 
-3.1.  Assumptions on Transport Security Links
+6.1.  Assumptions on Transport Security Links
 
    Any secure channel can be used as a transport layer to protect MLS
    messages such as QUIC, TLS, WireGuard or TOR.  However, the MLS
@@ -766,7 +766,7 @@ Table of Contents
    reason for this consideration is that in the group setting, active
    malicious insiders or adversarial services are to be considered.
 
-3.1.1.  Metadata Protection for Unencrypted Group Operations
+6.1.1.  Metadata Protection for Unencrypted Group Operations
 
    The main use of the secure transport layer for MLS is to protect the
    already limited amount of metadata.  Very little information is
@@ -808,7 +808,7 @@ Table of Contents
       *RECOMMENDATION:* Never use the unencrypted mode for group
       operations without using a secure channel for the transport layer.
 
-3.1.2.  DoS protection
+6.1.2.  DoS protection
 
    In general we do not consider Denial of Service (DoS) resistance to
    be the responsibility of the protocol.  However, it should not be
@@ -828,7 +828,7 @@ Table of Contents
       accordance with the privacy expected from the secure transport
       links.  (See more discussion further down.)
 
-3.1.3.  Message Suppression and Error Correction
+6.1.3.  Message Suppression and Error Correction
 
    The MLS protocol is particularly sensitive about group operation
    message loss and reordering.  This is because in the default setting,
@@ -857,7 +857,7 @@ Table of Contents
       secure transport channel, prefer using a protocol which provides
       Forward Error Correction.
 
-3.2.  Intended Security Guarantees
+6.2.  Intended Security Guarantees
 
    MLS aims to provide a number of security guarantees, covering
    authentication, as well as confidentiality guarantees to different
@@ -871,7 +871,7 @@ Table of Contents
    a few papers.  In particular, I think the guarantees for a member
    being added to a new group are interesting.]]
 
-3.2.1.  Message Secrecy and Authentication
+6.2.1.  Message Secrecy and Authentication
 
    MLS enforces the encryption of application messages and thus
    generally guarantees authentication and confidentiality of
@@ -895,7 +895,7 @@ Table of Contents
    the amount of information leaked about the length of the plaintext to
    an observer on the network.
 
-3.2.2.  Forward and Post-Compromise Security
+6.2.2.  Forward and Post-Compromise Security
 
    MLS provides additional protection regarding secrecy of past messages
    and future messages.  These cryptographic security properties are
@@ -922,7 +922,7 @@ Table of Contents
    Both of these properties are satisfied even against compromised DSs
    and ASs.
 
-3.2.3.  Non-Repudiation vs Deniability
+6.2.3.  Non-Repudiation vs Deniability
 
    MLS provides strong authentication within a group, such that a group
    member cannot send a message that appears to be from another group
@@ -935,7 +935,7 @@ Table of Contents
    also be possible to operate MLS in a "deniable" mode where such proof
    is not possible.
 
-3.3.  Endpoint Compromise
+6.3.  Endpoint Compromise
 
    The MLS protocol adopts a threat model which includes multiple forms
    of endpoint/client compromise.  While adversaries are in a very
@@ -967,7 +967,7 @@ Table of Contents
    additional protection as the secret exchanged within the TreeKEM
    group key agreement are public-key encrypted to subgroups with HPKE.
 
-3.3.1.  Compromise of AEAD key material
+6.3.1.  Compromise of AEAD key material
 
    In some circumstances, adversaries may have access to specific AEAD
    keys and nonces which protect an Application or a Group Operation
@@ -1022,7 +1022,7 @@ Table of Contents
    encrypted message only guarantees that a member of the group sent the
    message.
 
-3.3.2.  Compromise of the Group Secrets of a single group for one or
+6.3.2.  Compromise of the Group Secrets of a single group for one or
         more group epochs
 
    The attack scenario considering an adversary gaining access to a set
@@ -1051,7 +1051,7 @@ Table of Contents
    messages exchanged in the epochs after the compromised party has been
    removed.
 
-3.3.3.  Compromise by an active adversary with the ability to sign
+6.3.3.  Compromise by an active adversary with the ability to sign
         messages
 
    Under such a scenario, where an active adversary has compromised an
@@ -1080,7 +1080,7 @@ Table of Contents
    group and to the infrastructure as they need to have access to group
    secrets to compute the encryption keys or the membership tag.
 
-3.3.4.  Compromise of the authentication with access to a signature key
+6.3.4.  Compromise of the authentication with access to a signature key
 
    DISCLAIMER: Significant work remains in this section.  [[TODO: Remove
    disclaimer.]]
@@ -1126,7 +1126,7 @@ Table of Contents
    signature private key.  Both should contribute to the key and it
    should be stored securely by the client with no direct access.
 
-3.3.5.  Security consideration in the context of a full state compromise
+6.3.5.  Security consideration in the context of a full state compromise
 
    In real-world compromise scenarios, it is often the case that
    adversaries target specific devices to obtain parts of the memory or
@@ -1188,18 +1188,18 @@ Table of Contents
    [[TODO: Considerations for Signature keys being :reused or not across
    groups]]
 
-3.3.6.  More attack scenarios
+6.3.6.  More attack scenarios
 
    [[TODO: Make examples for more complex attacks, cross groups, multi
    collusions...]]
 
    [[TODO: Do we discuss PCFS in this document?  If yes, where?]]
 
-3.4.  Service Node Compromise
+6.4.  Service Node Compromise
 
-3.4.1.  General considerations
+6.4.1.  General considerations
 
-3.4.1.1.  Privacy of the network connections
+6.4.1.1.  Privacy of the network connections
 
    There are many scenarios leading to communication between the
    application on a device and the Delivery Service or the
@@ -1233,7 +1233,7 @@ Table of Contents
    architecture might not be enough to provide strong privacy or
    anonymity properties.
 
-3.4.2.  Delivery Service Compromise
+6.4.2.  Delivery Service Compromise
 
    MLS is intended to provide strong guarantees in the face of
    compromise of the DS.  Even a totally compromised DS should not be
@@ -1244,7 +1244,7 @@ Table of Contents
    However, a DS can mount a variety of DoS attacks on the system,
    including total DoS attacks (where it simply refuses to forward any
    messages) and partial DoS attacks (where it refuses to forward
-   messages to and from specific clients).  As noted in Section 2.3.3,
+   messages to and from specific clients).  As noted in Section 4.3,
    these attacks are only partially detectable by clients without an
    out-of-band channel.  Ultimately, failure of the DS to provide
    reasonable service must be dealt with as a customer service matter,
@@ -1256,7 +1256,7 @@ Table of Contents
    it to attack forward security to a limited extent.  This threat can
    be mitigated by having initial keys expire.
 
-3.4.2.1.  Privacy of delivery and push notifications
+6.4.2.1.  Privacy of delivery and push notifications
 
    An important mechanism that is often ignored from the privacy
    considerations are the push-tokens.  In many modern messaging
@@ -1300,7 +1300,7 @@ Table of Contents
       periodically connect to the Delivery Service without the need of a
       dedicated push notification infrastructure.
 
-3.4.3.  Authentication Service Compromise
+6.4.3.  Authentication Service Compromise
 
    The Authentication Service design is left to the infrastructure
    designers.  In most designs, a compromised AS is a serious matter, as
@@ -1337,7 +1337,7 @@ Table of Contents
       limit the ability of an adversary with no physical access to
       extract the top-level signature key.
 
-3.4.3.1.  Authentication compromise: Ghost users and impersonations
+6.4.3.1.  Authentication compromise: Ghost users and impersonations
 
    One thing for which the MLS Protocol is designed for is to make sure
    that all clients know who is in the group at all times.  This means
@@ -1403,7 +1403,7 @@ Table of Contents
    keys on client compromise, which helps recovering security faster in
    various cases.
 
-3.4.3.2.  Privacy of the Group Membership
+6.4.3.2.  Privacy of the Group Membership
 
    Often, expectation from users is that the infrastructure will not
    retain the ability to constantly map the user identity to signature
@@ -1429,7 +1429,7 @@ Table of Contents
       the public keys from the service which generates or validates the
       credentials or cryptographic material of the Clients.
 
-3.5.  Considerations for attacks outside of the threat model
+6.5.  Considerations for attacks outside of the threat model
 
    Physical attacks on devices storing and executing MLS principals are
    not considered in depth in the threat model of the MLS protocol.
@@ -1455,11 +1455,11 @@ Table of Contents
 
    [[TODO: Reference to server assist when the draft is available.]]
 
-4.  IANA Considerations
+7.  IANA Considerations
 
    This document makes no requests of IANA.
 
-5.  Contributors
+8.  Contributors
 
    *  Katriel Cohn-Gordon
       University of Oxford
@@ -1489,10 +1489,10 @@ Table of Contents
       Wire
       raphael@wire.com
 
-6.  Informative References
+9.  Informative References
 
    [KeyTransparency]
-              Google, ., "Key Transparency", 2017,
+              Google, "Key Transparency", 2017,
               <https://KeyTransparency.org>.
 
    [MLSPROTO] Barnes, R., Beurdouche, B., Millican, J., Omara, E., Cohn-
@@ -1502,59 +1502,51 @@ Table of Contents
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
               DOI 10.17487/RFC3552, July 2003,
-              <https://datatracker.ietf.org/doc/html/rfc3552>.
+              <https://www.rfc-editor.org/rfc/rfc3552>.
 
    [RFC6120]  Saint-Andre, P., "Extensible Messaging and Presence
               Protocol (XMPP): Core", RFC 6120, DOI 10.17487/RFC6120,
-              March 2011,
-              <https://datatracker.ietf.org/doc/html/rfc6120>.
+              March 2011, <https://www.rfc-editor.org/rfc/rfc6120>.
 
    [RFC7049]  Bormann, C. and P. Hoffman, "Concise Binary Object
               Representation (CBOR)", RFC 7049, DOI 10.17487/RFC7049,
-              October 2013,
-              <https://datatracker.ietf.org/doc/html/rfc7049>.
+              October 2013, <https://www.rfc-editor.org/rfc/rfc7049>.
 
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
-              2014, <https://datatracker.ietf.org/doc/html/rfc7159>.
+              2014, <https://www.rfc-editor.org/rfc/rfc7159>.
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://datatracker.ietf.org/doc/html/rfc8446>.
+              <https://www.rfc-editor.org/rfc/rfc8446>.
 
 Authors' Addresses
 
    Benjamin Beurdouche
    Inria & Mozilla
-
    Email: ietf@beurdouche.com
 
 
    Eric Rescorla
    Mozilla
-
    Email: ekr@rtfm.com
 
 
    Emad Omara
    Google
-
    Email: emadomara@google.com
 
 
    Srinivas Inguva
    Twitter
-
    Email: singuva@twitter.com
 
 
    Albert Kwon
    MIT
-
    Email: kwonal@mit.edu
 
 
    Alan Duric
    Wire
-
    Email: alan@wire.com
