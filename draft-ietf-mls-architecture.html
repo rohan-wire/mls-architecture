@@ -1293,9 +1293,6 @@ or the authentication service.<a href="#section-abstract-4" class="pilcrow">¶</
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.5">
                     <p id="section-toc.1-1.6.2.3.2.5.1"><a href="#section-6.3.5" class="xref">6.3.5</a>.  <a href="#name-security-consideration-in-t" class="xref">Security consideration in the context of a full state compromise</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.6">
-                    <p id="section-toc.1-1.6.2.3.2.6.1"><a href="#section-6.3.6" class="xref">6.3.6</a>.  <a href="#name-more-attack-scenarios" class="xref">More attack scenarios</a></p>
-</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
@@ -1976,19 +1973,24 @@ is safe to upgrade to a new ciphersuite or protocol version.<a href="#section-5.
 assumes that the attacker has complete control of the network. It is
 intended to provide the security services described in the face of
 such attackers.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">-- The attacker can monitor the entire network.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<p id="section-6-3">-- The attacker can read unprotected messages.<a href="#section-6-3" class="pilcrow">¶</a></p>
-<p id="section-6-4">-- The attacker can generate and inject any message in the unprotected
-   transport layer.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">In addition, these guarantees are intended to degrade gracefully in
+<ul class="normal">
+<li class="normal" id="section-6-2.1">The attacker can monitor the entire network.<a href="#section-6-2.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-2.2">The attacker can read unprotected messages.<a href="#section-6-2.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-2.3">The attacker can generate, inject and delete any message in the unprotected
+transport layer.<a href="#section-6-2.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-6-3">In addition, these guarantees are intended to degrade gracefully in
 the presence of compromise of the transport security links as well as
 of both clients and elements of the messaging system, as described in
-the remainder of this section.<a href="#section-6-5" class="pilcrow">¶</a></p>
-<p id="section-6-6">Generally, MLS is designed under the assumption that the transport
+the remainder of this section.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">Generally, MLS is designed under the assumption that the transport
 layer is present to protect metadata and privacy in general, while the
 MLS protocol is providing stronger guarantees such as confidentiality,
 integrity and authentication guarantees. Stronger properties such as
-deniability can also be achieved in specific architecture designs.<a href="#section-6-6" class="pilcrow">¶</a></p>
+deniability can also be achieved in specific architecture designs.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <div id="assumptions-on-transport-security-links">
 <section id="section-6.1">
         <h3 id="name-assumptions-on-transport-se">
@@ -1997,8 +1999,11 @@ deniability can also be achieved in specific architecture designs.<a href="#sect
 <p id="section-6.1-1">Any secure channel can be used as a transport layer to protect MLS
 messages such as QUIC, TLS, WireGuard or TOR. However, the MLS
 protocol is designed to consider the following threat-model:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">-- The attacker can read and write arbitrary messages inside the
-   secure transport channel.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-2.1">The attacker can read, write, and delete arbitrary messages inside the
+secure transport channel.<a href="#section-6.1-2.1" class="pilcrow">¶</a>
+</li>
+        </ul>
 <p id="section-6.1-3">This departs from most threat models where we consider that the secure
 channel used for transport always provides secrecy. The reason for
 this consideration is that in the group setting, active malicious
@@ -2013,20 +2018,20 @@ the already limited amount of metadata. Very little information is
 contained in the unencrypted header of the MLS protocol message
 format for group operation messages, and application messages are
 always encrypted in MLS.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1.1-2">Contrary to popular messaging services, the full list of recipients
-cannot be sent to the server for dispatching messages because that
+<p id="section-6.1.1-2">MLS avoids needing to send the full list of recipients
+to the server for dispatching messages because that
 list is potentially extremely large in MLS. Therefore, the metadata
-typically consists of a pseudo-random Group Identifier (GID), a numerical
-index referring to the key needed to decrypt the ciphertext content, and
-another numerical value to determine the epoch of the group (the
-number of group operations that have been performed).<a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1.1-3">The MLS protocol provides an authenticated "Authenticated Additional
+typically consists of a pseudo-random Group Identifier (GID), a numerical value
+to determine the epoch of the group (the number of changes that have been made
+to the group), and another numerical value referring to the specific key needed
+to decrypt the ciphertext content.<a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-3">The MLS protocol provides an authenticated "Additional Authenticated
 Data" field for applications to make data available outside the
 MLSCiphertext.<a href="#section-6.1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-6.1.1-4.1">
               <p id="section-6.1.1-4.1.1"><strong>RECOMMENDATION:</strong>
-Use the "Authenticated Additional Data" field of the MLSCiphertext
+Use the "Additional Authenticated Data" field of the MLSCiphertext
 message instead of using other unauthenticated means of sending
 metadata throughout the infrastructure. If the data is private, the
 infrastructure should use encrypted Application messages instead.<a href="#section-6.1.1-4.1.1" class="pilcrow">¶</a></p>
@@ -2083,31 +2088,36 @@ further down.)<a href="#section-6.1.2-3.1.1" class="pilcrow">¶</a></p>
           <h4 id="name-message-suppression-and-err">
 <a href="#section-6.1.3" class="section-number selfRef">6.1.3. </a><a href="#name-message-suppression-and-err" class="section-name selfRef">Message Suppression and Error Correction</a>
           </h4>
-<p id="section-6.1.3-1">The MLS protocol is particularly sensitive about group operation
-message loss and reordering. This is because in the default setting,
-MLS clients have to process those specific messages in order to have a
-synchronized group state, after what the MLS protocol efficiently
-generates keys for application messages.
-[[TODO: It is unclear from this text whether MLS is "sensitive" in that it
-provides additional constraints to prevent this, or is "sensitive" in that it is
-vulnerable. Need to clarify]]<a href="#section-6.1.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.1.3-2">The Delivery Service can have the role of helping with reliability,
-but is mainly useful for reliability in the asynchronous aspect of the
-communication between MLS clients.<a href="#section-6.1.3-2" class="pilcrow">¶</a></p>
-<p id="section-6.1.3-3">While it is difficult or impossible to prevent a network adversary from
+<p id="section-6.1.3-1">As noted above, MLS is designed to provide some robustness in the face of
+tampering within the secure transport, i.e., tampering by the Delivery Service.
+The confidentiality and authenticity properties of MLS prevent the DS reading or
+writing messages.  MLS also provides a few tools for detecting message
+suppression, with the caveat that message suppression cannot always be
+distinguished from transport failure.<a href="#section-6.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.3-2">Each encrypted MLS message carries a "generation" number which is a per-sender
+incrementing counter.  If a group member observes a gap in the generation
+sequence for a sender, then they know that they have missed a message from that
+sender.  MLS also provides a facility for group members to send authenticated
+acknowledgements of application messages received within a group.<a href="#section-6.1.3-2" class="pilcrow">¶</a></p>
+<p id="section-6.1.3-3">As discusssed in <a href="#delivery-service" class="xref">Section 4</a>, the Delivery Service is trusted to select
+the single Commit message that is applied in each epoch from among the ones sent
+by group members.  Since only one Commit per epoch is meaningful, it's not
+useful for the DS to transmit multiple Commits to clients.  The risk remains
+that the DS will use the ability maliciously.<a href="#section-6.1.3-3" class="pilcrow">¶</a></p>
+<p id="section-6.1.3-4">While it is difficult or impossible to prevent a network adversary from
 suppressing payloads in transit, in certain infrastructures such as banks
 or governments settings, unidirectional transports can be used and be
 enforced via electronic or physical devices such as diodes. This can
 lead to payload corruption which does not affect the security or
 privacy properties of the MLS protocol but does affect the reliability
 of the service. In that case specific measures can be taken to ensure
-the appropriate level of redundancy and quality of service for MLS.<a href="#section-6.1.3-3" class="pilcrow">¶</a></p>
+the appropriate level of redundancy and quality of service for MLS.<a href="#section-6.1.3-4" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-6.1.3-4.1">
-              <p id="section-6.1.3-4.1.1"><strong>RECOMMENDATION:</strong>
+<li class="normal ulEmpty" id="section-6.1.3-5.1">
+              <p id="section-6.1.3-5.1.1"><strong>RECOMMENDATION:</strong>
 If unidirectional transport is used for the secure transport
 channel, prefer using a protocol which provides Forward Error
-Correction.<a href="#section-6.1.3-4.1.1" class="pilcrow">¶</a></p>
+Correction.<a href="#section-6.1.3-5.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2190,8 +2200,13 @@ Additionally, some services require that a recipient be able to prove to the
 service provider that a message was sent by a given client, in order to report
 abuse. MLS supports both of these use cases. In some deployments, these services
 are provided by mechanisms which allow the receiver to prove a message's origin
-to a third party (this if often called "non-repudiation"), but it should also be
-possible to operate MLS in a "deniable" mode where such proof is not possible.<a href="#section-6.2.3-1" class="pilcrow">¶</a></p>
+to a third party. This is often called "non-repudiation".<a href="#section-6.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.2.3-2">Roughly speaking, "deniability" is the opposite of "non-repudiation", i.e., the
+property that it is impossible to prove to a third party that a message was sent
+by a given sender.  MLS does not make any claims with regard to deniability.  It
+may be possible to operate MLS in ways that provide certain deniability
+properties, but defining the specific requirements and resulting notions of
+deniability requires further analysis.<a href="#section-6.2.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2208,19 +2223,26 @@ where security guarantees can be recovered thanks to the PCS
 properties achieved by the MLS protocol.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <p id="section-6.3-2">In this section we will explore the consequences and recommendations
 regarding the following compromise scenarios:<a href="#section-6.3-2" class="pilcrow">¶</a></p>
-<p id="section-6.3-3">-- The attacker has access to a specific symmetric encryption key<a href="#section-6.3-3" class="pilcrow">¶</a></p>
-<p id="section-6.3-4">-- The attacker has access to the group secrets for one group<a href="#section-6.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.3-5">-- The attacker has access to a signature oracle for any group<a href="#section-6.3-5" class="pilcrow">¶</a></p>
-<p id="section-6.3-6">-- The attacker has access to the signature key for one group<a href="#section-6.3-6" class="pilcrow">¶</a></p>
-<p id="section-6.3-7">-- The attacker has access to all secrets of a user for all groups
-   (full state compromise)<a href="#section-6.3-7" class="pilcrow">¶</a></p>
-<p id="section-6.3-8">[[TODO: Cite the research papers in the context of these compromise models]]<a href="#section-6.3-8" class="pilcrow">¶</a></p>
-<p id="section-6.3-9">Recall that the MLS protocol provides chains of AEAD keys, per sender
+<ul class="normal">
+<li class="normal" id="section-6.3-3.1">The attacker has access to a specific symmetric encryption key<a href="#section-6.3-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.3-3.2">The attacker has access to the group secrets for one group<a href="#section-6.3-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.3-3.3">The attacker has access to a signature oracle for any group<a href="#section-6.3-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.3-3.4">The attacker has access to the signature key for one group<a href="#section-6.3-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.3-3.5">The attacker has access to all secrets of a user for all groups
+(full state compromise)<a href="#section-6.3-3.5" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-6.3-4">[[TODO: Cite the research papers in the context of these compromise models]]<a href="#section-6.3-4" class="pilcrow">¶</a></p>
+<p id="section-6.3-5">Recall that the MLS protocol provides chains of AEAD keys, per sender
 that are generated from Group Secrets. These keys are used to protect
 MLS Plaintext messages which can be Group Operation or Application
 messages. The Group Operation messages offer an additional protection
 as the secret exchanged within the TreeKEM group key agreement are
-public-key encrypted to subgroups with HPKE.<a href="#section-6.3-9" class="pilcrow">¶</a></p>
+public-key encrypted to subgroups with HPKE.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
 <div id="compromise-of-aead-key-material">
 <section id="section-6.3.1">
           <h4 id="name-compromise-of-aead-key-mate">
@@ -2237,7 +2259,7 @@ messages sent using keys of this chain. An adversary cannot send a
 message to a group which appears to be from any valid client since
 they cannot forge the signature.<a href="#section-6.3.1-2" class="pilcrow">¶</a></p>
 <p id="section-6.3.1-3">The MLS protocol will ensure that an adversary cannot compute any
-previous AEAD keys for the same epoch, or any other epochs.  Because
+previous or future AEAD keys for the same epoch, or any other epochs.  Because
 of its Forward Secrecy guarantees, MLS will also retain secrecy of all
 other AEAD keys generated for <em>other</em> MLS clients, outside this
 dedicated chain of AEAD keys and nonces, even within the epoch of the
@@ -2336,45 +2358,39 @@ secrets to compute the encryption keys or the membership tag.<a href="#section-6
           <h4 id="name-compromise-of-the-authentic">
 <a href="#section-6.3.4" class="section-number selfRef">6.3.4. </a><a href="#name-compromise-of-the-authentic" class="section-name selfRef">Compromise of the authentication with access to a signature key</a>
           </h4>
-<p id="section-6.3.4-1">DISCLAIMER: Significant work remains in this section.
-[[TODO: Remove disclaimer.]]<a href="#section-6.3.4-1" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-2">The difference between having access to the value of the signature key
+<p id="section-6.3.4-1">The difference between having access to the value of the signature key
 and only having access to a signing oracle is not about the ability of
 an active adaptative network attacker to perform different operations
 during the time of the compromise, the attacker can perform every
-operations available to a legitimate client in both cases.<a href="#section-6.3.4-2" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-3">There is a significant difference, however in terms of recovery after
-a compromise.<a href="#section-6.3.4-3" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-4">Because of the PCS guarantees provided by the MLS protocol, when a
+operations available to a legitimate client in both cases.<a href="#section-6.3.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.4-2">There is a significant difference, however in terms of recovery after
+a compromise.<a href="#section-6.3.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.3.4-3">Because of the PCS guarantees provided by the MLS protocol, when a
 previously compromised client performs an honest Commit which is not
 under the control of the adversary, both secrecy and authentication of
 messages can be recovered in the case where the attacker didn't get
 access to the key. Because the adversary doesn't have the key and has
 lost the ability to sign messages, they cannot authenticate messages
 on behalf of the compromised party, even if they still have control
-over some group keys by colluding with other members of the group.<a href="#section-6.3.4-4" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-5">This is in contrast with the case where the signature key is leaked.
+over some group keys by colluding with other members of the group.<a href="#section-6.3.4-3" class="pilcrow">¶</a></p>
+<p id="section-6.3.4-4">This is in contrast with the case where the signature key is leaked.
 In that case PCS of the MLS protocol will eventually allow recovery of
 the authentication of messages for future epochs but only after
-compromised parties refresh their credentials securely.<a href="#section-6.3.4-5" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-6">Beware that in both oracle and private key access, an active
+compromised parties refresh their credentials securely.<a href="#section-6.3.4-4" class="pilcrow">¶</a></p>
+<p id="section-6.3.4-5">Beware that in both oracle and private key access, an active
 adaptative attacker, can follow the protocol and request to update its
 own credential. This in turn induce a signature key rotation which
 could provide the attacker with part or the full value of the private
-key depending on the architecture of the service provider.<a href="#section-6.3.4-6" class="pilcrow">¶</a></p>
+key depending on the architecture of the service provider.<a href="#section-6.3.4-5" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-6.3.4-7.1">
-              <p id="section-6.3.4-7.1.1"><strong>RECOMMENDATION:</strong>
+<li class="normal ulEmpty" id="section-6.3.4-6.1">
+              <p id="section-6.3.4-6.1.1"><strong>RECOMMENDATION:</strong>
 Signature private keys should be compartmentalized from other
 secrets and preferably protected by an HSM or dedicated hardware
 features to allow recovery of the authentication for future messages
-after a compromised.<a href="#section-6.3.4-7.1.1" class="pilcrow">¶</a></p>
+after a compromised.<a href="#section-6.3.4-6.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-6.3.4-8">Even if the dedicated hardware approach is used, ideally, neither the
-Client or the Authentication service alone should provide the
-signature private key. Both should contribute to the key and it should
-be stored securely by the client with no direct access.<a href="#section-6.3.4-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-consideration-in-the-context-of-a-full-state-compromise">
@@ -2441,17 +2457,6 @@ compromise where for instance, an attacker can sign messages without
 having access to the key. In certain contexts, the rotation of
 credentials might only be triggered by the AS through ACLs, hence be
 outside of the capabilities of the attacker.<a href="#section-6.3.5-10" class="pilcrow">¶</a></p>
-<p id="section-6.3.5-11">[[TODO: Considerations for Signature keys being :reused or not across groups]]<a href="#section-6.3.5-11" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="more-attack-scenarios">
-<section id="section-6.3.6">
-          <h4 id="name-more-attack-scenarios">
-<a href="#section-6.3.6" class="section-number selfRef">6.3.6. </a><a href="#name-more-attack-scenarios" class="section-name selfRef">More attack scenarios</a>
-          </h4>
-<p id="section-6.3.6-1">[[TODO: Make examples for more complex attacks, cross groups,
-multi collusions...]]<a href="#section-6.3.6-1" class="pilcrow">¶</a></p>
-<p id="section-6.3.6-2">[[TODO: Do we discuss PCFS in this document? If yes, where?]]<a href="#section-6.3.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2590,35 +2595,41 @@ notification infrastructure.<a href="#section-6.4.2.1-7.1.1" class="pilcrow">¶<
 <p id="section-6.4.3-1">The Authentication Service design is left to the infrastructure
 designers. In most designs, a compromised AS is a serious matter, as
 the AS can serve incorrect or attacker-provided identities to clients.<a href="#section-6.4.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.4.3-2">-- The attacker can link an identity to a credential<a href="#section-6.4.3-2" class="pilcrow">¶</a></p>
-<p id="section-6.4.3-3">-- The attacker can generate new credentials<a href="#section-6.4.3-3" class="pilcrow">¶</a></p>
-<p id="section-6.4.3-4">-- The attacker can sign new credentials<a href="#section-6.4.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.4.3-5">-- The attacker can publish or distribute credentials<a href="#section-6.4.3-5" class="pilcrow">¶</a></p>
-<p id="section-6.4.3-6">Infrastructures that provide cryptographic material or credentials in
+<ul class="normal">
+<li class="normal" id="section-6.4.3-2.1">The attacker can link an identity to a credential<a href="#section-6.4.3-2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-6.4.3-2.2">The attacker can generate new credentials<a href="#section-6.4.3-2.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-6.4.3-2.3">The attacker can sign new credentials<a href="#section-6.4.3-2.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-6.4.3-2.4">The attacker can publish or distribute credentials<a href="#section-6.4.3-2.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-6.4.3-3">Infrastructures that provide cryptographic material or credentials in
 place of the MLS client (which is under the control of the user) have
 often the ability to use the associated secrets to perform operations
 on behalf of the user, which is unacceptable in many situations. Other
 mechanisms can be used to prevent this issue, such as the service
-blessing cryptographic material used by an MLS client.<a href="#section-6.4.3-6" class="pilcrow">¶</a></p>
+blessing cryptographic material used by an MLS client.<a href="#section-6.4.3-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-6.4.3-7.1">
-              <p id="section-6.4.3-7.1.1"><strong>RECOMMENDATION:</strong>
+<li class="normal ulEmpty" id="section-6.4.3-4.1">
+              <p id="section-6.4.3-4.1.1"><strong>RECOMMENDATION:</strong>
 Make clients submit signature public keys to the AS, this is usually
 better than the AS generating public key pairs because the AS
 cannot sign on behalf of the client. This is a benefit of a Public
-Key Infrastructure in the style of the Internet PKI.<a href="#section-6.4.3-7.1.1" class="pilcrow">¶</a></p>
+Key Infrastructure in the style of the Internet PKI.<a href="#section-6.4.3-4.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-6.4.3-8">An attacker that can generate or sign new credential may or may not
+<p id="section-6.4.3-5">An attacker that can generate or sign new credential may or may not
 have access to the underlying cryptographic material necessary to
 perform such operations. In that last case, it results in windows of
-time for which all emitted credentials might be compromised.<a href="#section-6.4.3-8" class="pilcrow">¶</a></p>
+time for which all emitted credentials might be compromised.<a href="#section-6.4.3-5" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-6.4.3-9.1">
-              <p id="section-6.4.3-9.1.1"><strong>RECOMMENDATION:</strong>
+<li class="normal ulEmpty" id="section-6.4.3-6.1">
+              <p id="section-6.4.3-6.1.1"><strong>RECOMMENDATION:</strong>
 Using HSMs to store the root signature keys to limit the ability of
 an adversary with no physical access to extract the top-level
-signature key.<a href="#section-6.4.3-9.1.1" class="pilcrow">¶</a></p>
+signature key.<a href="#section-6.4.3-6.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="authentication-compromise-ghost-users-and-impersonations">
@@ -2757,10 +2768,8 @@ specification, which remains non-trivial.<a href="#section-6.5-3" class="pilcrow
 Additional steps should be taken to protect the device and the MLS
 clients from physical compromise. In such setting, HSMs and secure
 enclaves can be used to protect signature keys.<a href="#section-6.5-4.1.1" class="pilcrow">¶</a></p>
-<p id="section-6.5-4.1.2">More information will be available in the Server-Assist draft.<a href="#section-6.5-4.1.2" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-6.5-5">[[TODO: Reference to server assist when the draft is available.]]<a href="#section-6.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
