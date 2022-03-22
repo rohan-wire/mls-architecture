@@ -1450,6 +1450,10 @@ Table of Contents
 
 8.  Contributors
 
+   *  Richard Barnes
+      Cisco
+      rlb@ipv.sx
+
    *  Katriel Cohn-Gordon
       University of Oxford
       me@katriel.co.uk
