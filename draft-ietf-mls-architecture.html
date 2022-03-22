@@ -1593,31 +1593,24 @@ security considerations.<a href="#section-3-7" class="pilcrow">¶</a></p>
 <p id="section-4-1">The Delivery Service (DS) is expected to play multiple roles in the
 Service Provider architecture:<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-2.1">To act as a directory service providing the initial keying material
+<li class="normal" id="section-4-2.1">Acting as a directory service providing the initial keying material
 for clients to use.
 This allows a client to establish a shared key and send encrypted
 messages to other clients even if the other client is offline.<a href="#section-4-2.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-4-2.2">To route messages between clients and to act as a message
-broadcaster, taking in one message and forwarding it to multiple
-clients (also known as "server side fanout").<a href="#section-4-2.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-4-2.2">Routing MLS messages among clients.<a href="#section-4-2.2" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-4-3">Because the MLS protocol provides a way for clients to send and receive
-application messages asynchronously, it only provides causal
-ordering of application messages from senders while it has to enforce
-global ordering of group operations to provide Group Agreement.
-[[TODO: Casual ordering?]]<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">Depending on the level of trust given by the group to the Delivery
+<p id="section-4-3">Depending on the level of trust given by the group to the Delivery
 Service, the functional and privacy guarantees provided by MLS may
 differ but the authentication and confidentiality guarantees remain
-the same.<a href="#section-4-4" class="pilcrow">¶</a></p>
-<p id="section-4-5">Unlike the Authentication Service which is trusted for authentication
+the same.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">Unlike the Authentication Service which is trusted for authentication
 and secrecy, the Delivery Service is completely untrusted regarding
 this property. While privacy of group membership might be a problem
 in the case of a Delivery Service server fanout, the Delivery Service can be
 considered as an active, adaptive network attacker from the point of
-view of the security analysis.<a href="#section-4-5" class="pilcrow">¶</a></p>
+view of the security analysis.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <div id="key-storage">
 <section id="section-4.1">
         <h3 id="name-key-storage">
@@ -1632,17 +1625,18 @@ cryptographic information:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <li class="normal" id="section-4.1-2.1">A credential from the Authentication Service attesting to the
 binding between the identity and the client's signature key.<a href="#section-4.1-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-4.1-2.2">The client's asymmetric encryption public key material signed with
-the signature public key associated with the credential.<a href="#section-4.1-2.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-4.1-2.2">The client's asymmetric encryption public key material.<a href="#section-4.1-2.2" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-4.1-3">As noted above, users may own multiple clients, each with their
+<p id="section-4.1-3">All the parameters in the KeyPackage are signed with the signature private key
+corresponding to the credential.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">As noted above, users may own multiple clients, each with their
 own keying material, and thus there may be multiple entries
-stored by each user.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">The Delivery Service is also responsible for allowing users to add,
+stored by each user.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">The Delivery Service is also responsible for allowing users to add,
 remove or update their initial key material, and for ensuring
 that the identifier for these keys are unique across all keys
-stored on the Delivery Service.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+stored on the Delivery Service.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="key-retrieval">
@@ -1661,53 +1655,69 @@ the group.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
         <h3 id="name-delivery-of-messages-and-at">
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-delivery-of-messages-and-at" class="section-name selfRef">Delivery of messages and attachments</a>
         </h3>
-<p id="section-4.3-1">The main responsibility of the Delivery Service is to ensure delivery
-of messages. Specifically, we assume that Delivery Services provide:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-1">The main responsibility of the Delivery Service is to ensure delivery of
+messages. Some MLS messages need only be delivered to some members of group
+(e.g., the message initializing a new member's state), while others need to be
+delivered to all members.  The Delivery Service may enable these delivery
+patterns via unicast channels (sometimes known as "client fanout"), broadcast
+channels ("server fanout"), or a mix of both.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">For the most part, MLS does not require the Delivery Service to deliver messages
+in any particular order.  The one requirement is that because an MLS group has a
+linear history, the members of the group must agree on the order in which
+changes are applied.  Concretely, the group must agree on which MLS Commit
+messages to apply.  There are a variety of ways to achieve this agreement, but
+most of them rely on some help from the Delivery Service.  For example, if a
+Delivery Service provides delivery in the same order to all group members, then
+the members can simply apply Commits in the order in which they appear.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">For the most part, MLS does not require the Delivery Service to deliver messages
+in any particular order.  The one requirement is that because an MLS group has a
+linear history, the members of the group must agree on the order in which
+changes are applied.  Concretely, the group must agree on which MLS Commit
+messages to apply.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">Each Commit is premised on a given state or "epoch" of the group.  The Delivery
+Service must transmit to the group exactly one Commit message per epoch.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">Much like the Authentication Service, the Delivery Service can be split between
+server and client components. Achieving the required uniqueness property will
+typically require a combination of client and server behaviors.  For example,
+all of the following examples provide a unique Commit per epoch:<a href="#section-4.3-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.3-2.1">Reliable delivery: when a message is provided to the Delivery Service,
-it is eventually delivered to all clients.<a href="#section-4.3-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-4.3-6.1">A "filtering server" Delivery Service where a server rejects all but the
+first Commit for an epoch and clients apply each Commit they receive.<a href="#section-4.3-6.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-4.3-2.2">In-order delivery: messages are delivered to the group
-in the order they are received by the Delivery Service
-and in approximately the order in which they are sent
-by clients. The latter is an approximate guarantee because
-multiple clients may send messages at the same time
-and so the Delivery Service needs some latitude in enforcing
-ordering across clients.<a href="#section-4.3-2.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-4.3-6.2">An "ordering server" Delivery Service where a server forwards all messages
+but assures that all clients see Commits in the same order, and clients.<a href="#section-4.3-6.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-4.3-2.3">Consistent ordering: the Delivery Service must ensure that all clients
-have the same view of message ordering for cryptographically
-relevant operations. This means that the Delivery Service MUST enforce
-global consistency of the ordering of group operation messages.<a href="#section-4.3-2.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-4.3-6.3">A "passive server" Delivery Service where a server forwards all messages
+without ordering or reliability guarantees, and clients execute some secondary
+consensus protocol to choose among the Commits received in a window.<a href="#section-4.3-6.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-4.3-3">Note that the protocol provides three important pieces of information
-within an MLSCiphertext message in order to provide ordering:<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-7">The MLS protocol provides three important pieces of information
+within an MLSCiphertext message in order to provide ordering:<a href="#section-4.3-7" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.3-4.1">The Group Identifier (GID) to allow for distinguishing the group for
-which the message has been sent;<a href="#section-4.3-4.1" class="pilcrow">¶</a>
+<li class="normal" id="section-4.3-8.1">The Group Identifier (group ID) to allow for distinguishing the group for
+which the message has been sent;<a href="#section-4.3-8.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-4.3-4.2">The Epoch number, which represents the number of changes (version) of
-the group associated with a specific GID, and allows for
+          <li class="normal" id="section-4.3-8.2">The Epoch number, which represents the number of changes (version) of
+the group associated with a specific group ID, and allows for
 lexicographical ordering of messages from different epochs within the
-same group;<a href="#section-4.3-4.2" class="pilcrow">¶</a>
+same group;<a href="#section-4.3-8.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-4.3-4.3">The Content Type of the message, which allows the Delivery Service to
- determine the ordering requirement on the message.<a href="#section-4.3-4.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-4.3-8.3">The Content Type of the message, which allows the Delivery Service to
+determine the ordering requirement on the message, in particular
+distinguishing Commit messages from other messages.<a href="#section-4.3-8.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-4.3-5">The MLS protocol itself can verify these properties. For instance, if
-the Delivery Service reorders messages from a client or provides different
-clients with inconsistent orderings, then clients can detect this
-misconduct. However, the protocol relies on the ordering, and on the
-fact that only one honest group operation message is fanned-out to
-clients per Epoch, to provide clients with a consistent view of the
-evolving Group State.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">Note that some forms of Delivery Service misbehavior are still possible and
+<p id="section-4.3-9">The MLS protocol itself can verify these properties. For instance, if the
+Delivery Service reorders messages from a client or provides different clients
+with inconsistent orderings, then clients can put messages back in their proper
+order.  The asynchronous nature of MLS means that within an epoch, messages are
+only ordered per-sender, not globally.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
+<p id="section-4.3-10">Note that some forms of Delivery Service misbehavior are still possible and
 difficult to detect. For instance, a Delivery Service can simply refuse
 to relay messages to and from a given client. Without some
 sort of side information, other clients cannot generally
-distinguish this form of Denial of Service (DoS) attack.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+distinguish this form of Denial of Service (DoS) attack.<a href="#section-4.3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="membership-knowledge">
@@ -1716,7 +1726,7 @@ distinguish this form of Denial of Service (DoS) attack.<a href="#section-4.3-6"
 <a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-membership-knowledge" class="section-name selfRef">Membership knowledge</a>
         </h3>
 <p id="section-4.4-1">Group membership is itself sensitive information and MLS is designed
-to drastically limit the amount of persistant metadata. However, large
+to limit the amount of persistant metadata. However, large
 groups often require an infrastructure which provides server fanout.
 In the case of client fanout, the destinations of a message is known by
 all clients, hence the server usually does not need this information.
@@ -1726,10 +1736,9 @@ learn that a given client is sending the same message to a set of other
 clients. In addition, there may be applications of MLS in which the group
 membership list is stored on some server associated with the Delivery
 Service.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
-<p id="section-4.4-2">While this knowledge is not a break of authentication or
-confidentiality, it is a serious issue for privacy. In the case where
-metadata has to be persisted for functionality, it SHOULD be stored
-encrypted at rest.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">While this knowledge is not a breach of the protocol's authentication or
+confidentiality guarantees, it is a serious issue for privacy.  Applications
+should consider anonymous systems for server fanout such as Loopix <span>[<a href="#Loopix" class="xref">Loopix</a>]</span>.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="membership-and-offline-members">
@@ -1745,8 +1754,8 @@ and thus be a threat to both FS and PCS if it is later compromised.<a href="#sec
 case where the client has not processed messages, but MLS-using
 systems can enforce some mechanism to try to retain these properties.
 Typically this will consist of evicting clients which are idle for too
-long, or mandate a silent key update from clients that is not attached to
-other messaging traffic, thus containing the threat of compromise. The
+long, or mandating a key update from clients that are not otherwise sending
+messages. The
 precise details of such mechanisms are a matter of local policy and beyond
 the scope of this document.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
 </section>
@@ -2834,6 +2843,10 @@ raphael@wire.com<a href="#section-8-1.7" class="pilcrow">¶</a>
 <dt id="KeyTransparency">[KeyTransparency]</dt>
         <dd>
 <span class="refAuthor">Google</span>, <span class="refTitle">"Key Transparency"</span>, <time datetime="2017" class="refDate">2017</time>, <span>&lt;<a href="https://KeyTransparency.org">https://KeyTransparency.org</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Loopix">[Loopix]</dt>
+        <dd>
+<span class="refAuthor">Piotrowska, A. M.</span>, <span class="refAuthor">Hayes, J.</span>, <span class="refAuthor">Elahi, T.</span>, <span class="refAuthor">Meiser, S.</span>, and <span class="refAuthor">G. Danezis</span>, <span class="refTitle">"The Loopix Anonymity System"</span>, <time datetime="2017" class="refDate">2017</time>. </dd>
 <dd class="break"></dd>
 <dt id="RFC3552">[RFC3552]</dt>
         <dd>
