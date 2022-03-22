@@ -2259,7 +2259,7 @@ messages sent using keys of this chain. An adversary cannot send a
 message to a group which appears to be from any valid client since
 they cannot forge the signature.<a href="#section-6.3.1-2" class="pilcrow">¶</a></p>
 <p id="section-6.3.1-3">The MLS protocol will ensure that an adversary cannot compute any
-previous or future AEAD keys for the same epoch, or any other epochs.  Because
+previous AEAD keys for the same epoch, or any other epochs.  Because
 of its Forward Secrecy guarantees, MLS will also retain secrecy of all
 other AEAD keys generated for <em>other</em> MLS clients, outside this
 dedicated chain of AEAD keys and nonces, even within the epoch of the
