@@ -1191,14 +1191,6 @@ or the authentication service.<a href="#section-abstract-4" class="pilcrow">¶</
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-authentication-service" class="xref">Authentication Service</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-credential-authentication" class="xref">Credential Authentication</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-message-authentication" class="xref">Message Authentication</a></p>
-</li>
-            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-delivery-service" class="xref">Delivery Service</a></p>
@@ -1544,62 +1536,53 @@ members cannot assume that the Member is a member of the group.<a href="#section
       </h2>
 <p id="section-3-1">The Authentication Service (AS) has to provide two functionalities:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3-2">
-<li id="section-3-2.1">authenticate the credentials (i.e. the identity/signature keypair)
-used in a group<a href="#section-3-2.1" class="pilcrow">¶</a>
+<li id="section-3-2.1">Issue credentials to clients that attest to bindings between identities and
+signature key pairs<a href="#section-3-2.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-3-2.2">authenticate messages sent in groups given the signature over the
-message and the sending member's credential<a href="#section-3-2.2" class="pilcrow">¶</a>
+        <li id="section-3-2.2">Enable a group member to verify that a credential presented by another member
+is valid<a href="#section-3-2.2" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-3-3">The AS is considered an abstract layer by the MLS specification, part
+<p id="section-3-3">A member with a valid credential authenticates its MLS messages by signing them
+with the private key corresponding to the public key in its credential.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">The AS is considered an abstract layer by the MLS specification, part
 of this service could be, for instance, running on the members'
-devices, while another part is a separate entity entirely.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">By the nature of its roles in MLS authentication, the AS is invested
+devices, while another part is a separate entity entirely.  The following
+examples illustrate the breadth of this concept:<a href="#section-3-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-5.1">A PKI could be used as an AS <span>[<a href="#RFC5280" class="xref">RFC5280</a>]</span>.  The issuance function would be
+provided by the certificate authorities in the PKI, and the verification
+function would correspond to certificate verification by clients.<a href="#section-3-5.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-3-5.2">Several current messaging applications rely on users verifying each others'
+key fingerprints for authentication.  In this scenario, the issuance function
+is simply the generation of a key pair (i.e., credential is just an identifier and
+public key, with no information to assist in verification).  The verification
+function is the application functionality that enables users to verify keys.<a href="#section-3-5.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-3-5.3">In a system based on Key Transparency (KT) <span>[<a href="#KeyTransparency" class="xref">KeyTransparency</a>]</span>, the issuance
+function would correspond to the insertion of a key in a KT log under a user's
+identity. The verification function would correspond to verifying a key's
+inclusion in the log for a claimed identity, together with the KT log's
+mechanisms for a user to monitor and control which keys are associated to
+their identity.<a href="#section-3-5.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-3-6">By the nature of its roles in MLS authentication, the AS is invested
 with a large amount of trust and the compromise of one of its
 functionalities could allow an adversary to, among other things,
 impersonate group members. We discuss security considerations
 regarding the compromise of the different AS functionalities in detail
-in Section <a href="#as-compromise" class="xref">Section 6.4.3</a>.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<div id="credential-authentication">
-<section id="section-3.1">
-        <h3 id="name-credential-authentication">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-credential-authentication" class="section-name selfRef">Credential Authentication</a>
-        </h3>
-<p id="section-3.1-1">In many cases, the first functionality might be provided by a service
-which fulfills a role similar to a certification authority in the
-WebPKI: it provides a binding of an identity (e.g., a user name, phone
-number, email address, etc) to a signature key. The identity/signature
-key pair can then either be used directly in a group, or as an root of
-trust which in turn authenticates credentials used in the group.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">The flexibility afforded by the latter option allows for multiple
-infrastructure considerations and has the benefit of providing ways to
-use different signature keys across different groups by using
-hierarchical authentication keys. This flexibility also comes at the
-price of a security tradeoff, described in the security
-considerations, between potential unlinkability of the signature keys
-across groups and the amount of time required to reinstate
-authentication and secrecy of messages after the compromise of a
-device.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="message-authentication">
-<section id="section-3.2">
-        <h3 id="name-message-authentication">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-message-authentication" class="section-name selfRef">Message Authentication</a>
-        </h3>
-<p id="section-3.2-1">MLS messages are authenticated by a signature conforming to the
-signature scheme of the group's ciphersuite. To allow for message
-deniability (see Section <a href="#Non-Repudiation-vs-Deniability" class="xref">Section 6.2.3</a>), messages
-are not required to be signed by the private key corresponding to a
-member's credential, but the key must be authenticated using some
-mechanism. Thus, message authentication relies on the accuracy of
-the key's authentication vice the credential authentication.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">While credential authentication can be performed by a separate entity,
-message authentication should be performed by each member separately
-due to the encryption layer of the protocol which protects the
-signature of the message.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-</section>
-</div>
+in Section <a href="#as-compromise" class="xref">Section 6.4.3</a>.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">The association between members' identities and signature keys is fairly
+flexible in MLS.  As noted above, there is no requirement that all clients
+belonging to a given user use the same key pair (in fact, such key reuse is
+forbidden to ensure clients have independent cryptographic state).  A member can
+also rotate the signature key they use within a group.  These mechanisms allow
+clients to use different signature keys in different contexts and at different
+points in time, providing unlinkability and post-compromise security benefits.
+Some security trade-offs related to this flexibility are discussed in the
+security considerations.<a href="#section-3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="delivery-service">
@@ -2855,6 +2838,10 @@ raphael@wire.com<a href="#section-8-1.7" class="pilcrow">¶</a>
 <dt id="RFC3552">[RFC3552]</dt>
         <dd>
 <span class="refAuthor">Rescorla, E.</span> and <span class="refAuthor">B. Korver</span>, <span class="refTitle">"Guidelines for Writing RFC Text on Security Considerations"</span>, <span class="seriesInfo">BCP 72</span>, <span class="seriesInfo">RFC 3552</span>, <span class="seriesInfo">DOI 10.17487/RFC3552</span>, <time datetime="2003-07" class="refDate">July 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3552">https://www.rfc-editor.org/rfc/rfc3552</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5280">[RFC5280]</dt>
+        <dd>
+<span class="refAuthor">Cooper, D.</span>, <span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Boeyen, S.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5280">https://www.rfc-editor.org/rfc/rfc5280</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6120">[RFC6120]</dt>
       <dd>
