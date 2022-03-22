@@ -2131,12 +2131,6 @@ Correction.<a href="#section-6.1.3-5.1.1" class="pilcrow">¶</a></p>
         </h3>
 <p id="section-6.2-1">MLS aims to provide a number of security guarantees, covering authentication, as
 well as confidentiality guarantees to different degrees in different scenarios.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.2-2">[[TODO: Authentication guarantees at the moment of joining a group are interesting
-and I don't see a section where it would fit. I'm thinking in particular about
-the parent hash and tree hashes in combination with with signatures and the key
-schedule. I know that several groups have worked on this and results are
-scattered between a few papers. In particular, I think the guarantees for a
-member being added to a new group are interesting.]]<a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <div id="message-secrecy-authentication">
 <section id="section-6.2.1">
           <h4 id="name-message-secrecy-and-authent">
@@ -2236,13 +2230,12 @@ regarding the following compromise scenarios:<a href="#section-6.3-2" class="pil
 (full state compromise)<a href="#section-6.3-3.5" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-6.3-4">[[TODO: Cite the research papers in the context of these compromise models]]<a href="#section-6.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.3-5">Recall that the MLS protocol provides chains of AEAD keys, per sender
+<p id="section-6.3-4">Recall that the MLS protocol provides chains of AEAD keys, per sender
 that are generated from Group Secrets. These keys are used to protect
 MLS Plaintext messages which can be Group Operation or Application
 messages. The Group Operation messages offer an additional protection
 as the secret exchanged within the TreeKEM group key agreement are
-public-key encrypted to subgroups with HPKE.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
+public-key encrypted to subgroups with HPKE.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
 <div id="compromise-of-aead-key-material">
 <section id="section-6.3.1">
           <h4 id="name-compromise-of-aead-key-mate">
