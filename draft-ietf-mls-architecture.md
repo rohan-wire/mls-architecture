@@ -556,12 +556,21 @@ and ensure that they are added / removed consistently.
 
 MLS provides two mechanisms for changing the membership of a group.  The primary
 mechanism is for an authorized member of the group to send a Commit that adds or
-removes other members.  The second mechanism is an "external join": A member of
+removes other members.  This first mechanism could use an Add proposal from a
+member of the group, or it could be in reaction to an "external proposal".
+The second mechanism is an "external join": A member of
 the group publishes certain information about the group, which a new member can
 use to construct an "external" Commit message that adds the new member to the
 group.  (There is no similarly unilateral way for a member to leave the group;
-they must be removed by a remaining member.)  [TODO discuss incompatibility of
-external proposal and external commit.]
+they must be removed by a remaining member.)  An external joiner cannot be
+aware of any pending proposals in the group, as they are not yet a member. As
+a result, an external join could effectively wipe out one or more otherwise valid
+pending proposals. It is the responsibility of the sender of those proposals to
+resend them in the new epoch if desired.
+
+> **RECOMMENDATION:**
+> If external joins are used, establish a policy for mitigating the impact on
+> pending proposals.
 
 With both mechanisms, changes to the membership are initiated from inside the
 group.  When members perform changes directly, this is clearly the case.
