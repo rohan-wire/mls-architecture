@@ -458,7 +458,7 @@ all of the following examples provide a unique Commit per epoch:
   first Commit for an epoch and clients apply each Commit they receive.
 
 * An "ordering server" Delivery Service where a server forwards all messages
-  but assures that all clients see Commits in the same order, and clients.
+  but assures that all clients see Commits in the same order.
 
 * A "passive server" Delivery Service where a server forwards all messages
   without ordering or reliability guarantees, and clients execute some secondary
@@ -560,7 +560,8 @@ removes other members.  The second mechanism is an "external join": A member of
 the group publishes certain information about the group, which a new member can
 use to construct an "external" Commit message that adds the new member to the
 group.  (There is no similarly unilateral way for a member to leave the group;
-they must be removed by a remaining member.)
+they must be removed by a remaining member.)  [TODO discuss incompatibility of
+external proposal and external commit.]
 
 With both mechanisms, changes to the membership are initiated from inside the
 group.  When members perform changes directly, this is clearly the case.
@@ -568,8 +569,10 @@ External joins are authorized indirectly, in the sense that a member publishing
 a GroupInfo object authorizes anyone to join who has access to the GroupInfo
 object.  External joins do not allow for more granular authorization checks to
 be done before the new member is added to the group, so if an application wishes
-to both allow external joins and enforce such checks, then the application will
-need to do such checks when a member joins, and remove them if checks fail.
+to both allow external joins and enforce such checks, then either all the members
+of the group must all have the ability to check and reject invalid External joins
+autonomously, or the application needs to do such checks when a member joins
+and remove them if those checks fail.
 
 Application setup may also determine other criteria for
 membership validity. For example, per-device signature keys can be signed by an
@@ -666,7 +669,7 @@ an external join to add themselves to the group.  The `external_senders`
 extension ensures that all members agree on which signers are allowed to send
 proposals, but any other policies must be assured to be consistent as above.
 
-> ** RECOMMENDATION:**
+> **RECOMMENDATION:**
 > Have an explicit group policy setting the conditions under which external
 > joins are allowed.
 
@@ -732,7 +735,8 @@ The protocol aims to be compatible with federated environments. While
 this document does not specify all necessary mechanisms required for
 federation, multiple MLS implementations can interoperate to form
 federated systems if they use compatible authentication mechanisms,
-ciphersuites, and infrastructure functionalities.
+ciphersuites, application content, and infrastructure functionalities.
+Federation is described in more detail in {{?I-D.ietf-mls-federation}}.
 
 ## Compatibility with Future Versions of MLS
 
@@ -748,7 +752,7 @@ In MLS 1.0, the creator of the group is responsible for selecting the
 best ciphersuite supported across clients. Each client is able to
 verify availability of protocol version, ciphersuites and extensions
 at all times once he has at least received the first group operation
-message.
+message. [ISSUE what is best?]
 
 Each member of an MLS group advertises the protocol functionality they support.
 These capability advertisements can be updated over time, e.g., if client
@@ -781,15 +785,17 @@ two different deployments based on them to interoperate.
 - An **Authentication Service**, described fully in {{authentication-service}},
   defines the types of credentials which may be used in a deployment and
   provides methods for:
-  1. Issuing new credentials,
-  2. Validating a credential against a reference identifier, and
-  3. Validating whether or not two credentials represent the same user.
+  1. Issuing new credentials with a relevant credential lifetime,
+  2. Validating a credential against a reference identifier,
+  3. Validating whether or not two credentials represent the same client, and
+  4. Optionally revoking credentials which are no longer authorized.
 - A **Delivery Service**, described fully in {{delivery-service}}, provides
   methods for:
   1. Delivering messages sent to a group to all members in the group.
   2. Delivering Welcome messages to new members of a group.
-  3. Downloading KeyPackages for specific clients, and uploading new KeyPackages
-     for a user's own clients.
+  3. Uploading new KeyPackages for a user's own clients.
+  4. Downloading KeyPackages for specific clients. Typically, KeyPackages are
+     used once and consumed.
 - Additional services may or may not be required depending on the application
   design:
   - If assisted joining is desired (meaning that the ratchet tree is not
@@ -819,7 +825,7 @@ two implementations to interoperate:
 - The maximum total lifetime that is acceptable for a KeyPackage.
 - How long to store the resumption secret for past epochs of a group.
 - The degree of tolerance that's allowed for out-of-order message delivery:
-  - How long to keep unused nonce and key pairs for a sender
+  - How long to keep unused nonce and key pairs for a sender [ISSUE unclear]
   - A maximum number of unused key pairs to keep.
   - A maximum number of steps that clients will move a secret tree ratchet
     forward in response to a single message before rejecting it.
@@ -838,14 +844,22 @@ MLS requires the following policies to be defined, which restrict the set of
 acceptable behavior in a group. These policies must be consistent between
 deployments for them to interoperate:
 
+- A policy on which ciphersuites are acceptable.
+- A policy on any mandatory or forbidden MLS extensions.
 - A policy on when to send proposals and commits in plaintext instead of
   encrypted.
 - A policy for which proposals are valid to have in a commit, including but not
   limited to:
   - When a member is allowed to add or remove other members of the group.
   - When, and under what circumstances, a reinitialization proposal is allowed.
-  - When proposals from external senders are allowed.
-  - When external joiners are allowed.
+  - When proposals from external senders are allowed and how to authorize
+    those proposals.
+  - When external joiners are allowed and how to authorize those external
+    commits.
+  - Which other proposal types are allowed.
+- A policy of when members should commit pending proposals in a group.
+- A policy of how to protect and share the GroupInfo objects needed for external
+  joins.
 - A policy for when two credentials represent the same client. Note that many
   credentials may be issued authenticating the same identity but for different
   signature keys, because each credential corresponds to a different device
@@ -917,7 +931,7 @@ list is potentially extremely large in MLS. Therefore, the metadata
 typically consists of a pseudo-random Group Identifier (GID), a numerical value
 to determine the epoch of the group (the number of changes that have been made
 to the group), and another numerical value referring to the specific key needed
-to decrypt the ciphertext content.
+to decrypt the ciphertext content. [ISSUE what is this value / context?]
 
 The MLS protocol provides an authenticated "Additional Authenticated
 Data" field for applications to make data available outside the
@@ -1206,7 +1220,7 @@ The attacker can generate any message, for the current and future
 epochs until an honest update from the compromised client happens.
 
 Note that under this compromise scenario, the attacker can perform all
-operations which are available to an legitimate client even without
+operations which are available to a legitimate client even without
 access to the actual value of the signature key.
 
 Without access to the group secrets, the adversary will not have the
@@ -1290,7 +1304,7 @@ a message. They also are providing the strong authentication
 guarantees to other clients, hence we consider that their protection
 by additional security mechanism should be a priority.
 
-Overall there is no way to detect or prevent these compromise, as
+Overall there is no way to detect or prevent these compromises, as
 discussed in the previous sections, performing separation of the
 application secret states can help recovery after compromise, this is
 the case for signature keys but similar concern exists for the
@@ -1370,6 +1384,17 @@ inherently lead to compromise of the message stream, but does allow it
 to attack forward security to a limited extent. This threat can be
 mitigated by having initial keys expire.
 
+Initial keying material (KeyPackages) using the `basic` Credential type
+is more vulnerable to replacement by a malicious or compromised DS, as
+there is no built-in cryptographic binding between the identity and the
+public key of the client. 
+
+> **RECOMMENDATION:**
+> Prefer a Credential type in KeyPackages which includes a strong
+> cryptographic binding between the identity and its key (for example
+> the `x509` Credential type). When using the `basic` Credential type
+> take extra care to verify the identity (typically out-of-band).
+
 #### Privacy of delivery and push notifications
 
 An important mechanism that is often ignored from the privacy
@@ -1385,7 +1410,9 @@ To "push" this information to the device, the service provider and the
 OS infrastructures use unique per-device, per-application identifiers
 called push-tokens. This means that the push notification provider and
 the service provider have information on which devices receive
-information and at which point in time.
+information and at which point in time. Alternatively, non-mobile
+applications could use a websocket or persistent connection for notifications
+directly from the DS.
 
 Even though they can't necessarily access the content, which is
 typically encrypted MLS messages, the service provider and the push
@@ -1399,7 +1426,7 @@ message retrieval.
 > **RECOMMENDATION:**
 > If real time notifications are not necessary and that specific steps
 > must be taken to improve privacy, one can delay notifications
-> randomly across recipient devices using a mixnet or other
+> randomly across recipient devices using a mixnet [REF] or other
 > techniques.
 
 Note that it is quite easy for legal requests to ask the service
@@ -1447,7 +1474,7 @@ perform such operations. In that last case, it results in windows of
 time for which all emitted credentials might be compromised.
 
 > **RECOMMENDATION:**
-> Using HSMs to store the root signature keys to limit the ability of
+> Use HSMs to store the root signature keys to limit the ability of
 > an adversary with no physical access to extract the top-level
 > signature key.
 
@@ -1458,13 +1485,22 @@ that all clients know who is in the group at all times. This means
 that - if all Members of the group and the Authentication Service are
 honest - no other parties than the members of the current group can
 read and write messages protected by the protocol for that Group.
+Note that when BasicCredential is used, the Authentication Service
+also needs an out-of-band mechanism to verify 
 
 Beware though, the link between the cryptographic identity of the
 Client and the real identity of the User is important.
 With some Authentication Service designs, a private or centralized
 authority can be trusted to generate or validate signature keypairs
 used in the MLS protocol. This is typically the case in some of the
-biggest messaging infrastructures.
+biggest messaging infrastructures. 
+
+Details about how to verify the identity of a client depend on the
+MLS Credential type used. For example, cryptographic verification of
+credentials can be largely performed autonomously on the clients for
+the `x509` Credential type. In contrast, when MLS clients use the
+`basic` Credential type, a larger degree of trust must be places in a
+(likely) centralized authentication resource.
 
 While this service is often very well protected from external
 attackers, it might be the case that this service is compromised.
@@ -1472,6 +1508,10 @@ In such infrastructure, the AS could generate or validate a signature
 keypair for an identity which is not the expected one. Because a user
 can have many MLS clients running the MLS protocol, it possibly has
 many signature keypairs for multiple devices.
+
+> **RECOMMENDATION:**
+> Select the strongest MLS Credential type available among the
+> target members of an MLS group.
 
 In the case where an adversarial keypair is generated for a specific
 identity, an infrastructure without any transparency mechanism or
@@ -1483,7 +1523,7 @@ the users.
 > **RECOMMENDATION:**
 > Make sure that MLS clients reflect all the membership changes to the
 > users as they happen. If a choice has to be made because the number
-> of notifications is too high, a public log should be maintained in
+> of notifications is too high, a public log should be maintained of
 > the state of the device so that the user can examine it.
 
 While the ways to handle MLS credentials are not defined by the
@@ -1500,7 +1540,7 @@ transparency mechanism which allows each user to check if credentials
 used in groups have been published in the transparency log. Another
 benefit of this mechanism is for revocation. The users of a group
 could check for revoked keys (in case of compromise detection) using a
-mechanism such as CRLite or some more advanced privacy preserving
+mechanism such as CRLite [REF] or some more advanced privacy preserving
 technology.
 
 > **RECOMMENDATION:**
@@ -1541,7 +1581,7 @@ targeted user.
 > Do not use the same signature keypair across groups.
 
 > **RECOMMENDATION:**
-> Separate the service binding the identities and the public keys from
+> Separate the service binding of the identities and the public keys from
 > the service which generates or validates the credentials or
 > cryptographic material of the Clients.
 
@@ -1554,7 +1594,7 @@ While non-permanent, non-invasive attacks can sometimes be equivalent
 to software attacks, physical attacks are considered outside of the
 MLS threat model.
 
-Compromise scenarios typically consist in a software adversary, which
+Compromise scenarios typically consist of a software adversary, which
 can maintain active adaptive compromise and arbitrarily change the
 behavior of the client or service.
 
@@ -1582,6 +1622,8 @@ key derivation paths in the ratchet tree and key schedule. Finally, [CHK19]
 analyzes the authentication and cross-group healing guarantees provided by MLS.
 
 # Informative References
+
+[TODO convert to REF]
 
 * ACDT19: https://eprint.iacr.org/2019/1189
 * ACCKKMPPWY19: https://eprint.iacr.org/2019/1489
